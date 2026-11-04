@@ -1,0 +1,4 @@
+# nunca envie cópias de segurança para o GitHub
+*backup*.json
+central-backup-*.json
+build.py
