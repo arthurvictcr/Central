@@ -1,10 +1,8 @@
-/* Cole aqui a configuração do seu projeto Firebase (Console do Firebase → Configurações do projeto → Seus apps → Web).
-   Esses valores não são segredo: quem protege os dados são as regras do Firestore (arquivo firestore.rules). */
 window.CENTRAL_FIREBASE = {
-  apiKey: "",
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: ""
+  apiKey: "AIzaSyAAOzVZSRaoCjjnMH32B1WQvQ-pTqtYAnM",
+  authDomain: "central-26d3f.firebaseapp.com",
+  projectId: "central-26d3f",
+  storageBucket: "central-26d3f.firebasestorage.app",
+  messagingSenderId: "1057089256971",
+  appId: "1:1057089256971:web:53d9bbfc7640ecadea510e"
 };
