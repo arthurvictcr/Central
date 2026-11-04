@@ -1,5 +1,5 @@
 /* Seiva — service worker. Troque VERSION a cada atualização para o app baixar a nova versão. */
-const VERSION = "seiva-1.1-261104c";
+const VERSION = "seiva-1.1-261104d";
 const SHELL = ["./", "index.html", "bridge.js", "firebase-config.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png", "icons/apple-180.png", "icons/favicon.png"];
 
 self.addEventListener("install", e => {
