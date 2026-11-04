@@ -1,6 +1,6 @@
-/* Central — service worker. Troque VERSION a cada atualização para o app baixar a nova versão. */
-const VERSION = "central-0.9-261104-e";
-const SHELL = ["./", "index.html", "bridge.js", "firebase-config.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png"];
+/* Seiva — service worker. Troque VERSION a cada atualização para o app baixar a nova versão. */
+const VERSION = "seiva-1.1-261104c";
+const SHELL = ["./", "index.html", "bridge.js", "firebase-config.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png", "icons/apple-180.png", "icons/favicon.png"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -12,7 +12,7 @@ self.addEventListener("fetch", e => {
   const req = e.request, url = new URL(req.url);
   if (req.method !== "GET") return;
   // dados e login nunca passam pelo cache
-  if (/googleapis\.com|firebaseio|identitytoolkit|securetoken|api\.open-meteo\.com/.test(url.host)) return;
+  if (/googleapis\.com|firebaseio|identitytoolkit|securetoken|api\.open-meteo\.com|spotify\.com|bigdatacloud/.test(url.host)) return;
   // páginas: tenta a rede primeiro (pega atualizações), cai no cache sem internet
   if (req.mode === "navigate") {
     e.respondWith(fetch(req).then(r => { const cp = r.clone(); caches.open(VERSION).then(c => c.put("index.html", cp)); return r; }).catch(() => caches.match("index.html")));

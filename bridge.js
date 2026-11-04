@@ -1,7 +1,7 @@
-/* Central — ponte do aplicativo.
-   Faz a Central funcionar fora do claude.ai: login com Google, dados no Firestore
+/* Seiva — ponte do aplicativo.
+   Faz o app funcionar fora do claude.ai: login com Google, dados no Firestore
    (sincroniza celular e computador, funciona offline), clima pelo Open-Meteo e
-   download da cópia de segurança. Nenhuma senha é guardada pela Central. */
+   download da cópia de segurança. Nenhuma senha é guardada pelo app. */
 (function () {
   "use strict";
   var cfg = window.CENTRAL_FIREBASE;
@@ -15,10 +15,10 @@
       el.id = "appLogin";
       el.innerHTML =
         '<div class="al-card"><img src="icons/icon-192.png" alt="" width="72" height="72">' +
-        '<h1>Central</h1><p class="al-sub">Sua vida organizada num lugar só.</p>' +
+        '<h1>Seiva</h1><p class="al-sub">Sua rotina em fluxo.</p>' +
         '<button type="button" id="alGoogle">Entrar com Google</button>' +
         '<p class="al-msg" id="alMsg"></p>' +
-        '<p class="al-foot">Seus dados ficam só na sua conta. A Central não guarda senhas.</p></div>';
+        '<p class="al-foot">Seus dados ficam só na sua conta. A Seiva não guarda senhas.</p></div>';
       document.body.appendChild(el);
       document.getElementById("alGoogle").onclick = signIn;
     }
@@ -70,7 +70,7 @@
     } catch (_) {}
     dbPromise = new Promise(function (resolve) {
       firebase.auth().onAuthStateChanged(function (u) {
-        if (u) { user = u; hideLogin(); resolve(makeDb(u.uid)); }
+        if (u) { user = u; window.CENTRAL_USER = { name: u.displayName || "" }; hideLogin(); resolve(makeDb(u.uid)); }
         else { loginScreen(""); }
       });
     });
@@ -92,8 +92,8 @@
   }
   var mcp = {
     watchTool: function (_s, _t, loc, cb, opts) {
-      var run = function () { weatherPayload(loc.latitude, loc.longitude).then(function (p) { cb({ type: "data", result: { payload: p } }); }).catch(function () {}); };
-      run(); setInterval(run, (opts && opts.refetchInterval) || 1800000);
+      var run = function () { var L = (window.CENTRAL_WXLOC && window.CENTRAL_WXLOC()) || loc; weatherPayload(L.latitude, L.longitude).then(function (p) { cb({ type: "data", result: { payload: p } }); }).catch(function () {}); };
+      window.__wxRun = run; run(); setTimeout(run, 4000); setInterval(run, (opts && opts.refetchInterval) || 1800000);
     }
   };
 
