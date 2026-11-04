@@ -2987,6 +2987,7 @@ let assets=null;
 const UISUB={sub:"contas"};
 let db=null;
 const UI={open:new Set(),openFolders:new Set(),calMode:"semana",anchor:new Date(),search:""};
+const skv=(m,sk)=>{m=m||{};const v=m[sk||"classico"];return v!==undefined?v:(sk?undefined:m[""]);};
 const SKVARS={pilulas:[["","Lavanda","#5B5BD6"],["menta","Menta","#1F9E7A"],["coral","Coral","#E8664A"],["oceano","Oceano","#2F80ED"]],minimal:[["","Grafite","#141414"],["areia","Areia","#B9A88E"],["gelo","Gelo","#8FA6B8"]],aero:[["","Azul · mar","#1e8fd8"],["verde","Verde · campo","#3fae3a"],["laranja","Laranja · pôr do sol","#f39a2b"]]};
 const SKFUNDOS={"":[["","Nenhum"],["outono","Árvore de outono"],["mar","Mar calmo"],["floresta","Floresta"]],pilulas:[["","Nenhum"],["ceu","Céu e campo"],["bolhas","Bolhas"],["aurora","Aurora"]],minimal:[["","Nenhum"],["pontos","Pontos"],["grade","Grade"]]};
 const PALETAS=[["auto","Automático","Claro ou escuro, igual ao celular",["#FFFFFF","#1D1D1D","#1C1C1E","#E5E5E5"]],["claro","Claro","Branco com preto fosco",["#FFFFFF","#1C1C1E","#1C1C1E","#8E8E93"]],["escuro","Escuro","Preto fosco com cinza claro",["#1D1D1D","#2E2E2E","#E5E5E5","#8A8A8A"]],
@@ -3207,7 +3208,7 @@ function applyLayout(){const L=lay(),r=document.documentElement;
    if(sk==="aurora"||sk==="ceu")sk="aero";if(sk==="pixel")sk="pilulas";
    if(sk==="aero"||sk==="minimal"||sk==="pilulas"){if(r.getAttribute("data-skin")!==sk)r.setAttribute("data-skin",sk);if(r.hasAttribute("data-aerov"))r.removeAttribute("data-aerov");applyPal(["auto","claro","escuro"].includes(savedPal)?savedPal:"auto");}
    else{if(r.hasAttribute("data-skin"))r.removeAttribute("data-skin");if(r.hasAttribute("data-aerov"))r.removeAttribute("data-aerov");applyPal(savedPal);}}
-  {const sk=r.getAttribute("data-skin")||"";let vv=(S.config.vari||{})[sk]||"";const ff=(S.config.fundo||{})[sk]||"",vd=!!((S.config.vidro||{})[sk]||vv==="vidro");if(vv==="vidro")vv="";
+  {const sk=r.getAttribute("data-skin")||"";let vv=skv(S.config.vari,sk)||"";const ff=skv(S.config.fundo,sk)||"",vd=!!(skv(S.config.vidro,sk)||vv==="vidro");if(vv==="vidro")vv="";
    if(vd){if(!r.hasAttribute("data-vidro"))r.setAttribute("data-vidro","");}else if(r.hasAttribute("data-vidro"))r.removeAttribute("data-vidro");
    const A=S.config;[["leve",A.leve?"1":""],["texto",A.texto||""],["contraste",A.contraste?"1":""]].forEach(([k,v])=>{if(v){if(r.getAttribute("data-"+k)!==v)r.setAttribute("data-"+k,v);}else if(r.hasAttribute("data-"+k))r.removeAttribute("data-"+k);});
    try{REDUCED=REDUCED_SYS||!!A.leve;}catch(_){}
@@ -4472,12 +4473,12 @@ function openEditor(kind,item,extra){
       const paint2=()=>[grpM,grpC].forEach(g=>g.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===hidden.value?"true":"false")));
       grpM.addEventListener("click",()=>setTimeout(paint2));grpC.addEventListener("click",()=>setTimeout(paint2));paint2();
       const sk=S.config.skin||"",redraw=()=>refreshEditor();
-      let colors=grpC;if(sk&&SKVARS[sk]){const cur=(S.config.vari||{})[sk]||"";colors=el("div",{class:"var-row"},...SKVARS[sk].map(([v,n,c])=>el("button",{type:"button",class:"var-b","aria-pressed":v===cur?"true":"false",onclick:async()=>{await saveCfg({vari:{...(S.config.vari||{}),[sk]:v}});applyLayout();redraw();}},el("i",{class:"var-sw var-"+sk+"-"+(v||"def"),style:"background:"+c}),el("span",{text:n}))));}
-      const fl=SKFUNDOS[sk],curF=(S.config.fundo||{})[sk]||"";
-      const fundos=fl?el("div",{class:"fd-row"},...fl.map(([v,n])=>el("button",{type:"button",class:"fd-b","aria-pressed":v===curF?"true":"false",onclick:async()=>{await saveCfg({fundo:{...(S.config.fundo||{}),[sk]:v}});applyLayout();redraw();}},el("i",{class:"fd-prev fd-"+(v||"none")}),el("span",{text:n})))):null;
-      const vOn=!!((S.config.vidro||{})[sk]||(sk==="aero"&&(S.config.vari||{}).aero==="vidro"));
+      let colors=grpC;if(sk&&SKVARS[sk]){const cur=skv(S.config.vari,sk)||"";colors=el("div",{class:"var-row"},...SKVARS[sk].map(([v,n,c])=>el("button",{type:"button",class:"var-b","aria-pressed":v===cur?"true":"false",onclick:async()=>{await saveCfg({vari:{...(S.config.vari||{}),[sk||"classico"]:v}});applyLayout();redraw();}},el("i",{class:"var-sw var-"+sk+"-"+(v||"def"),style:"background:"+c}),el("span",{text:n}))));}
+      const fl=SKFUNDOS[sk],curF=skv(S.config.fundo,sk)||"";
+      const fundos=fl?el("div",{class:"fd-row"},...fl.map(([v,n])=>el("button",{type:"button",class:"fd-b","aria-pressed":v===curF?"true":"false",onclick:async()=>{await saveCfg({fundo:{...(S.config.fundo||{}),[sk||"classico"]:v}});applyLayout();redraw();}},el("i",{class:"fd-prev fd-"+(v||"none")}),el("span",{text:n})))):null;
+      const vOn=!!(skv(S.config.vidro,sk)||(sk==="aero"&&(S.config.vari||{}).aero==="vidro"));
       const vidro=el("div",{class:"vd-row"},el("div",{class:"grow"},el("b",{text:"Vidro"}),el("small",{text:"Cartões transparentes sobre o fundo, como no app de clima."})),
-        el("div",{class:"so-seg"},...[["","Desligado"],["1","Ligado"]].map(([v,t])=>el("button",{type:"button","aria-pressed":(v==="1")===vOn?"true":"false",onclick:async()=>{const vr={...(S.config.vari||{})};if(vr.aero==="vidro")vr.aero="";await saveCfg({vidro:{...(S.config.vidro||{}),[sk]:v==="1"},vari:vr});applyLayout();redraw();}},t))));
+        el("div",{class:"so-seg"},...[["","Desligado"],["1","Ligado"]].map(([v,t])=>el("button",{type:"button","aria-pressed":(v==="1")===vOn?"true":"false",onclick:async()=>{const vr={...(S.config.vari||{})};if(vr.aero==="vidro")vr.aero="";await saveCfg({vidro:{...(S.config.vidro||{}),[sk||"classico"]:v==="1"},vari:vr});applyLayout();redraw();}},t))));
       return el("div",{class:"field"},el("label",{text:f.l}),el("span",{class:"pal-lb",text:"Modo"}),grpM,el("span",{class:"pal-lb",text:sk?"Cores do estilo":"Cores aconchegantes"}),colors,
         fundos?el("span",{class:"pal-lb",text:"Fundo"}):null,fundos,el("span",{class:"pal-lb",text:"Efeito"}),vidro,hidden,el("small",{text:sk==="aero"?"No Aero, cada cor traz o seu próprio céu.":"As cores seguem o modo claro ou escuro que você escolher."}));}
     if(f.type==="emoji"){const inp=el("input",{id,autocomplete:"off",placeholder:"Ou digite um emoji",style:"font-size:1rem"});inp.value=val||"";

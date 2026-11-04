@@ -49,8 +49,24 @@
 
   if (ready) {
     firebase.initializeApp(cfg);
+    try { firebase.firestore().settings({ ignoreUndefinedProperties: true, merge: true }); } catch (_) {}
     try {
       firebase.firestore().enablePersistence({ synchronizeTabs: true }).catch(function () {});
+    } catch (_) {}
+    /* o Firestore não aceita campos com nome vazio nem listas dentro de listas: limpa antes de salvar */
+    var clean = function (v) {
+      if (Array.isArray(v)) return v.map(function (x) { return Array.isArray(x) ? JSON.stringify(x) : clean(x); });
+      if (v && typeof v === "object" && Object.getPrototypeOf(v) === Object.prototype) {
+        var o = {}; Object.keys(v).forEach(function (k) { if (v[k] !== undefined) o[k === "" ? "classico" : k] = clean(v[k]); }); return o;
+      }
+      return v;
+    };
+    try {
+      var DR = firebase.firestore.DocumentReference.prototype, CR = firebase.firestore.CollectionReference.prototype;
+      var _set = DR.set, _upd = DR.update, _add = CR.add;
+      DR.set = function (d, o) { return _set.call(this, clean(d), o); };
+      DR.update = function (d) { return _upd.call(this, clean(d)); };
+      CR.add = function (d) { return _add.call(this, clean(d)); };
     } catch (_) {}
     dbPromise = new Promise(function (resolve) {
       firebase.auth().onAuthStateChanged(function (u) {
