@@ -4939,7 +4939,7 @@ route();paintDots();render();
   try{db=window.claude&&window.claude.use?await window.claude.use("db"):null;}catch(_){db=null;}
   if(!db){clearTimeout(timer);banner(window.CENTRAL_FIREBASE?"Falta configurar o Firebase no arquivo firebase-config.js.":"Abra a Central no claude.ai, conectado à sua conta, para ver e salvar seus dados.");return;}
   const cols=["contas","objetivos","ideias","regras","escala","gastos","documentos","listas","curtir","diario","emails","lixeira","lembretes"],pending=new Set(cols);
-  const done=(n,snap)=>{if(!snap.metadata.fromCache){pending.delete(n);if(!pending.size){clearTimeout(timer);banner("");}}};
+  const done=(n,snap)=>{if(!snap.metadata.fromCache||window.CENTRAL_FIREBASE){pending.delete(n);if(!pending.size){clearTimeout(timer);banner("");}}};
   for(const c of cols){
     db.collection(c).onSnapshot(snap=>{
       if(c==="escala"){const m={};snap.docs.forEach(d=>{m[d.id]=d.data();});S.escala=m;}
