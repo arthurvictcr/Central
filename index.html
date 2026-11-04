@@ -2755,6 +2755,9 @@ body.focusing section.view>*,body.editing section.view>*,#v-inicio.organizing>*{
 #hoverEdit{width:30px!important;height:30px!important;padding:0!important;justify-content:center;border-radius:50%!important;gap:0!important;opacity:0}
 #hoverEdit.on{opacity:.9}
 #hoverEdit svg{width:15px!important;height:15px!important}
+
+/* tudo que está escondido fica escondido, inclusive as abas em grade */
+[hidden],.wgrid[hidden],section.view[hidden]{display:none!important}
 </style>
 
 <header>
