@@ -27,6 +27,7 @@ html{-webkit-text-size-adjust:100%}
 .al-card h1{font-family:"Schibsted Grotesk",sans-serif;margin:14px 0 4px;font-size:1.8rem}
 .al-sub{margin:0 0 22px;color:#4C6A60}
 #alGoogle{width:100%;border:0;border-radius:999px;padding:14px;font:700 1rem Figtree,sans-serif;background:#14876A;color:#fff;cursor:pointer}
+#alGuest{width:100%;margin-top:10px;border:1px solid #CFE3DA;border-radius:999px;padding:12px;font:600 .92rem Figtree,sans-serif;background:transparent;color:#17312A;cursor:pointer}
 .al-msg{min-height:1.2em;color:#B23A2E;font-size:.85rem}
 .al-foot{font-size:.76rem;color:#7E968E;margin:6px 0 0}
 </style>
@@ -3053,6 +3054,12 @@ img,svg,a{-webkit-user-drag:none}
 .acc.editing .av-cam{opacity:1;transform:none}
 .acc:not(.editing) .acc-av{cursor:default}
 .acc.editing .acc-av{cursor:pointer;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 35%,transparent)}
+
+.sp-bar{display:block;width:96px;height:4px;border-radius:2px;background:color-mix(in srgb,var(--ink) 10%,transparent);overflow:hidden;margin-top:10px}
+.sp-bar i{display:block;width:40%;height:100%;border-radius:2px;background:#14876A;animation:spbar 1s ease-in-out infinite}
+@keyframes spbar{0%{transform:translateX(-100%)}100%{transform:translateX(250%)}}
+#splash{z-index:400}
+.guest-n{display:flex;flex-direction:column;gap:6px;margin:8px 0;padding:10px;border-radius:12px;background:var(--sunk)}.guest-n small{color:var(--muted);font-size:.78rem}
 </style>
 
 <header>
@@ -3068,7 +3075,7 @@ img,svg,a{-webkit-user-drag:none}
     <span class="tab-name" id="tabName" aria-live="polite"></span>
   </div>
 </header>
-<div id="splash" aria-hidden="true"><div class="sp-in"><svg class="seiva-ic" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="svg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2FB57A"/><stop offset=".55" stop-color="#14876A"/><stop offset="1" stop-color="#0B5F55"/></linearGradient><linearGradient id="svg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#D9F7E8"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#svg1)"/><ellipse cx="32" cy="9" rx="24" ry="7" fill="#fff" opacity=".18"/><path d="M32 13C32 13 18 29 18 39a14 14 0 0 0 28 0C46 29 32 13 32 13z" fill="url(#svg2)"/><path d="M32 49V37" stroke="#14876A" stroke-width="2.8" stroke-linecap="round"/><path d="M32 41c0-4.5-3.2-7-7.5-7 0 4.3 3.2 7 7.5 7zM32 38c0-4 3-6.5 7-6.5 0 4-3 6.5-7 6.5z" fill="#2FB57A"/><circle cx="25" cy="27" r="2.6" fill="#fff" opacity=".9"/></svg><b>Seiva</b><small>sua rotina em fluxo</small></div></div>
+<div id="splash" aria-hidden="true"><div class="sp-in"><svg class="seiva-ic" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="svg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2FB57A"/><stop offset=".55" stop-color="#14876A"/><stop offset="1" stop-color="#0B5F55"/></linearGradient><linearGradient id="svg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#D9F7E8"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#svg1)"/><ellipse cx="32" cy="9" rx="24" ry="7" fill="#fff" opacity=".18"/><path d="M32 13C32 13 18 29 18 39a14 14 0 0 0 28 0C46 29 32 13 32 13z" fill="url(#svg2)"/><path d="M32 49V37" stroke="#14876A" stroke-width="2.8" stroke-linecap="round"/><path d="M32 41c0-4.5-3.2-7-7.5-7 0 4.3 3.2 7 7.5 7zM32 38c0-4 3-6.5 7-6.5 0 4-3 6.5-7 6.5z" fill="#2FB57A"/><circle cx="25" cy="27" r="2.6" fill="#fff" opacity=".9"/></svg><b>Seiva</b><small>sua rotina em fluxo</small><i class="sp-bar"><i></i></i></div></div>
 <div id="bgArt" aria-hidden="true"></div>
 <div class="hello">
   <div class="wrap">
@@ -4596,11 +4603,15 @@ async function savePastas(list){if(!db){noDb();return;}
   try{await db.doc("config/geral").set({...S.config,pastas:list});}catch(e){banner("Não consegui salvar a pasta.");}}
 
 /* ---------- editor ---------- */
-setTimeout(()=>{const sp=document.getElementById("splash");if(!sp)return;sp.classList.add("out");setTimeout(()=>sp.remove(),260);},REDUCED_SYS?0:520);
+(function(){const t0=Date.now();let done=false;
+  const fin=()=>{if(done)return;done=true;clearInterval(iv);const sp=document.getElementById("splash");if(!sp)return;requestAnimationFrame(()=>requestAnimationFrame(()=>{sp.classList.add("out");setTimeout(()=>sp.remove(),260);}));};
+  window.__splashDone=fin;
+  const ready=()=>typeof LOADED!=="undefined"&&LOADED.has("config")&&LOADED.has("ideias")&&LOADED.has("escala")&&LOADED.has("listas");
+  const iv=setInterval(()=>{const el_=Date.now()-t0;if(el_>3200||(el_>280&&ready()))fin();},40);})();
 const SET_INDEX=[["Modo Pluma","toque","modo leve rápido desempenho animações lento travando acessibilidade"],["Tamanho do texto","toque","letra fonte maior grande"],["Contraste reforçado","toque","ler legível escuro"],["Vibração","toque","duplo toque haptico"],["Sons","toque","som clique"],["Avisos de brotos","toque","conquistas brotos"],
  ["Estilo do app","visual","clássico pílulas minimal aero aparência visual"],["Modo claro e escuro","visual","tema noite dia automático"],["Cores do tema","visual","outono linho musgo cor"],["Fundo","visual","imagem papel de parede"],["Vidro","visual","transparente translúcido"],["Cor de destaque","visual","cor botão"],
  ["Foto e nome","perfil","perfil conta"],["Cópia de segurança","copia","backup baixar restaurar"],["Lixeira","lixeira","apagados recuperar"],["Senha do diário","diario","diário pin"],["Restaurar o padrão","padrao","fábrica resetar formatar"],["Brotos","conquistas","conquistas vitórias semana"],["Idioma","idioma","português"],["Canteiro","partes","partes módulos blocos widgets ligar desligar esconder adicionar remover"],["Organização da tela","organizar","barra de abas embaixo cima esquerda direita rolar ordem início atalhos listas"],["Modo da tela","toque","computador celular pc tela ampla"],["Atalhos do teclado","teclas","teclado computador"]];
-const APP_VER={v:"1.1",nome:"Seiva",build:"261104d"};
+const APP_VER={v:"1.1",nome:"Seiva",build:"261104e"};
 /* ---------- Spotify: o que você está ouvindo (só leitura, só no app instalado) ---------- */
 const SP={get(){try{return JSON.parse(localStorage.getItem("seiva-sp")||"null");}catch(_){return null;}},set(v){try{v?localStorage.setItem("seiva-sp",JSON.stringify(v)):localStorage.removeItem("seiva-sp");}catch(_){}},id(){try{return localStorage.getItem("seiva-sp-id")||(S.config.spotify||{}).clientId||"";}catch(_){return "";}},last:null,busy:false};
 const spRedirect=()=>location.origin+location.pathname;
@@ -4629,7 +4640,7 @@ function renderSpotify(){const b=$("spBlock");if(!b||b.hidden)return;const L=SP.
   if(!spCan()){b.replaceChildren(el("div",{class:"sp-row"},logo,el("div",{class:"sp-tx"},el("span",{class:"label",text:"Música"}),el("b",{text:"Você estava ouvindo…"}),el("small",{text:"Funciona no app instalado: conecte o Spotify em Menu → Configurações → Spotify."}))));return;}
   if(!SP.get()){b.replaceChildren(el("div",{class:"sp-row"},logo,el("div",{class:"sp-tx"},el("span",{class:"label",text:"Música"}),el("b",{text:"Conecte o Spotify"}),el("small",{text:"Para ver aqui o que você está ouvindo."})),el("button",{class:"btn small",type:"button",onclick:()=>swapEditor("ajuste",{id:"spotify"},{page:"spotify"})},"Conectar")));return;}
   if(!L){b.replaceChildren(el("div",{class:"sp-row"},logo,el("div",{class:"sp-tx"},el("span",{class:"label",text:"Música"}),el("b",{text:"Nada tocando agora"}),el("small",{text:"Quando você ouvir algo no Spotify, aparece aqui."}))));return;}
-  b.replaceChildren(el("a",{class:"sp-row sp-link",href:L.url||"https://open.spotify.com",target:"_blank",rel:"noopener"},L.img?el("img",{class:"sp-cover",src:L.img,alt:"",loading:"lazy"}):logo,
+  b.replaceChildren(el("a",{class:"sp-row sp-link",href:L.url||"https://open.spotify.com",target:"_blank",rel:"noopener"},L.img?el("img",{class:"sp-cover",src:L.img,alt:"",loading:"lazy",decoding:"async"}):logo,
     el("div",{class:"sp-tx"},el("span",{class:"label"+(L.now?" sp-now":""),text:L.now?"Tocando agora":"Você estava ouvindo · "+agoTxt(L.when)}),el("b",{text:L.t}),el("small",{text:L.ar})),L.now?el("span",{class:"sp-eq","aria-hidden":"true"},el("i"),el("i"),el("i")):null));}
 const PZ_FIELDS=[{k:"_sk",l:"Estilo do app",type:"skin"},{k:"_vd",l:"Efeito vidro",type:"vidro"},{k:"tema",l:"Tema",type:"palette"},{k:"_ac",l:"Cor de destaque",type:"accent"}];
 const AJ_PAGES={aparencia:["Ateliê",PZ_FIELDS],visual:["Ateliê",PZ_FIELDS],partes:["Canteiro",[{k:"_cn",l:"",type:"cnseg",pg:"partes"},{k:"_md",l:"",type:"canteiro"}]],organizar:["Canteiro",[{k:"_cn",l:"",type:"cnseg",pg:"organizar"},{k:"_ly",l:"",type:"layout"}]],
@@ -4828,7 +4839,8 @@ function openEditor(kind,item,extra){
       const isDark=()=>{const r=document.documentElement,pl=r.getAttribute("data-palette");if(pl==="escuro")return true;if(pl==="claro")return false;const th=r.getAttribute("data-theme");return th?th==="dark":DARKMQ.matches;};
       const lamp=el("button",{class:"lamp",type:"button","aria-label":"Alternar claro e escuro",title:"Claro / escuro","aria-pressed":isDark()?"false":"true",onclick:async()=>{const toDark=!isDark();await setModo(toDark?"escuro":"claro");lamp.setAttribute("aria-pressed",toDark?"false":"true");try{hap("tick");}catch(_){}}},svgIcon("bulb"));
       wrapAcc=el("div",{class:"acc"});wrapAcc.append(avW,el("div",{class:"grow"},nmT,nm,(()=>{const lv=nivel();return el("div",{class:"lvl",title:lv.xp+" pontos"},el("span",{text:"Nível "+lv.n+" · "+lv.nome}),el("i",null,el("b",{style:"width:"+lv.pct+"%"})));})(),rmF,
-        window.centralSignOut?el("button",{class:"btn ghost small",type:"button",onclick:()=>window.centralSignOut()},"Sair da conta"):null),edit,lamp);return wrapAcc;}
+        (window.CENTRAL_USER&&window.CENTRAL_USER.anon&&window.centralLinkGoogle)?el("div",{class:"guest-n"},el("small",{text:"Você está como visitante: seus dados ficam presos a este aparelho. Ligue a uma conta Google para não perder nada."}),el("button",{class:"btn primary small",type:"button",onclick:()=>window.centralLinkGoogle()},"Ligar à minha conta Google")):null,
+        window.centralSignOut?el("button",{class:"btn ghost small",type:"button",onclick:()=>{if(window.CENTRAL_USER&&window.CENTRAL_USER.anon&&!confirm("Saindo do modo visitante, estes dados não voltam. Baixou a cópia de segurança?"))return;window.centralSignOut();}},"Sair da conta"):null),edit,lamp);return wrapAcc;}
     if(f.type==="drawernav"){const go=h=>{closeEditor();goTab(h);};
       return el("div",null,el("button",{class:"dsearch",type:"button",onclick:()=>swapEditor("busca",{id:"b"})},svgIcon("search"),el("span",{class:"grow",text:"Buscar em tudo, até ajustes"}),matchMedia("(hover:hover)").matches?el("kbd",{text:"Ctrl K"}):null),el("nav",{class:"dnav","aria-label":"Ir para"},...[["inicio","Início","house"],["agenda","Agenda","cal"],["tarefas","Tarefas","check2"],["objetivos","Planos","target"],["biblioteca","Biblioteca","shelf"],["contas","Contas","grid"],["financas","Finanças","coin"]]
         .filter(([h])=>h==="inicio"||(h==="garantias"?modOn("tab-contas"):modOn(h==="financas"?h:"tab-"+h))).map(([h,l,ic])=>{const sv_=skinIc(h),ico_=sv_?(()=>{const sp=el("span",{class:"dn-ic aero-wrap"});sp.innerHTML=sv_;return sp;})():icSq(ic,null,"dn-ic");return el("button",{type:"button",onclick:()=>go(h)},ico_,el("span",{text:l}));})));}
